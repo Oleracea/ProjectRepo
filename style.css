@@ -1,0 +1,51 @@
+body, html {
+    height: 100%;
+    margin: 0;
+  }
+  
+  .bg {
+    /* The image used */
+    background-image: url("../Lab_Website/resources/img/cu_boulder_logo.jpg");
+  
+    /* Full height */
+    height: 100%; 
+  
+    /* Center and scale the image nicely */
+    background-position: bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  .carousel { height: calc(100vh - 56px);}
+.carousel-inner,.carousel-item { height: 100%;}
+.carousel-item { background-color: #000;}
+.carousel-item img { height: 100%; object-fit: cover; object-position: center;}
+/* make active item container fill height of viewport using flexbox
+.carousel-item.active,
+.carousel-item-next,
+.carousel-item-prev {
+    flex: 1 0 100%;
+}
+
+/* fix transitioning item height */
+.carousel-item-next:not(.carousel-item-left),
+.active.carousel-item-right,
+.carousel-item-prev:not(.carousel-item-right),
+.active.carousel-item-left {
+    flex: 0 0 0;
+}
+
+/* make images fill height and width or clip */
+.carousel-item {
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
+.img-1 {
+    background-image: url("../Lab_Website/resources/img/beproudcapaabanner.jpg");
+}
+
+.img-2 {
+    background-image: url(..);
+} */

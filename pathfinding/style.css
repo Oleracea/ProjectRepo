@@ -1,0 +1,8 @@
+.grid-container{
+    display: grid;
+    grid-template-columns: 50px 50px 50px 50px 50px 50px 50px;
+}
+
+.grid-container>div {
+    background-color: black;
+}
