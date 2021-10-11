@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>API Call Test</title>
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+        <link rel="stylesheet" type="text/css" href="./style.css" />
+        <script src="./index.js"></script>
+        <style>
+            #map{
+            height: 700px;
+            width: 1000px;
+        }
+        </style>
+    </head>
+    <body>
+        <h1>
+            This is a test for the Google Maps Javascript API call
+        </h1>
+        <div id="map"></div>
+        <script>
+            function initMap(){
+                var options = {
+                    zoom:13, center:{lat:40.006817233499966, lng:-105.26281633479446}
+                }
+                var map = new google.maps.Map(document.getElementById("map"), options);
+                var marker = new google.maps.Marker({position: {lat:40.006817233499966, lng:-105.26281633479446},map:map});
+            }
+            var directionsDisplay = new google.maps.DirectionsRenderer();
+            directionsDisplay.setMap(map)
+            var request={
+                origin: "1612 Garfield Ave, Louisville, CO 80027",
+                destination: "Economics Building, 261 UCB #212, Boulder, CO 80302",
+                travelMode: google.maps.TravelMode.TRANSIT}
+            var directionsCall = new google.maps.DirectionsService().routes(request,(result,status)=>{
+            directionsDisplay.setDirections(result)}); 
+        </script>
+        <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+        <script
+          src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGJcjTzr6nYuE4gxGTI3VTgCvuhptMcVs&callback=initMap&v=weekly"
+          async
+        ></script>
+      </body>
+</html>
