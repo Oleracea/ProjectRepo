@@ -6,12 +6,10 @@ const order = ['start', 'end', 'closed']
 const cellElements = document.querySelectorAll('[data-cell]')
 let first;
 let end;
-console.log(cellElements);
 let visited = [];
 let track = 0;
 let tot_col_length = 15;
 let tot_row_length = 20;
-let parents = [];
 class Queue{
     constructor(){
         this.elements = [];
@@ -44,10 +42,7 @@ class Node{
 
     update_neighbors(grid){
         this.neighbors = [];
-        console.log(this);
-        console.log('here');
         if (this.row < this.total_rows - 1 && grid[this.row + 1][this.col].isClosed == false){
-            console.log('here');
             this.neighbors.push(grid[this.row + 1][this.col]);
             (grid[this.row + 1][this.col]).parent = grid[this.row][this.col];
         }
@@ -79,8 +74,6 @@ for(var i = 0; i < tot_row_length; i++){
     }
 }
 
-console.log(grid);
-
 
 start()
 
@@ -103,9 +96,6 @@ function handleClick(e){
     let index = Array.prototype.indexOf.call(cellElements, e.target);
     let y = index%20;
     let x = (index - y)/20;
-    console.log(y);
-    console.log(x);
-    //console.log(cellElements.indexOf(e.target));
     placeMark(cell, order[track])
 }
 
@@ -143,99 +133,71 @@ function UCS(first, end){
         visited.push(current);
         //addClass(current, 'visited');
         if(current == end){
-            console.log('FOUND');
             break;
         }
         current.update_neighbors(grid);
-        console.log(current.neighbors);
         for(var i = 0; i < current.neighbors.length; i++){
             q.enqueue(current.neighbors[i]);
         }
-        console.log(q.elements.length);
     }
-    console.log('visited');
-    console.log(visited);
-    animate(visited);
-    makeRoute(first, end);
-}
-
-function UCS_animate(first, end){
-    q = new Queue();
-    sNode = first;
-    var current = sNode;
-    q.enqueue(sNode);
-    window.setInterval(() => {
-        if(q.isEmpty){
-            return;
-        }
-            current = q.peek();
-            q.pop();
-            current.isClosed = true;
-            visited.push(current);
-            //addClass(current, 'visited');
-            if(current == end){
-                console.log('FOUND');
-                return;
-            }
-            current.update_neighbors(grid);
-            console.log(current.neighbors);
-            for(var i = 0; i < current.neighbors.length; i++){
-                q.enqueue(current.neighbors[i]);
-            }
-            console.log(q.elements.length);
-    }, 30);
-    console.log('visited');
-    console.log(visited);
-    animate(visited);
-    makeRoute_animate(first, end);
-}
-
-function makeRoute(start, end, grid){
-    var current = end;
     var parents = [];
-    while(current != start){
-        removeClass(current, 'visited');
-        addClass(current, 'path');
-        current = current.parent;
-        parents.push(current);
-    }
+    getParents(first, end, parents);
+    animate(visited, parents);
+}
+
+function getParents(start, end, parents){
+    var current = end;
     console.log(parents);
+    while(current != start){
+        parents.push(current);
+        current = current.parent;
+    }
+    return parent;
 }
 
-function makeRoute_animate(start, end){
-    var current = end;
-    var parents = [];
-    var i = 0;
-    while(current != start){
-        // removeClass(current, 'visited');
-        // addClass(current, 'path');
-        current = current.parent;
-        parents.push(current);
-    }
+const path_animate = async(parents, visited) => {
+    const result = await(animate(visited));
+    var i = parents.length - 1;
+    
     window.setInterval(() =>{
-        if(i === parents.length){
-            return;
+        if(i === 0){
+            return true;
         }
         removeClass(parents[i], 'visited');
         addClass(parents[i], 'path');
-        i++;
-    }, 100)
+        i--;
+    }, 100);
+    return true;
 }
 
-function animate(visited){
-    console.log(visited);
+function animate(visited, parents){
     var i = 0;
     
     window.setInterval(() =>{
         if(i === visited.length){
-            return;
-        }
-        removeClass(visited[i], 'path');
-        addClass(visited[i], 'visited');
-        i++;
-    }, 10);
+            console.log(parents);
+            var j = parents.length - 1;
     
+            window.setInterval(() =>{
+                if(j === 0){
+                    return true;
+                }
+                removeClass(parents[j], 'visited');
+                addClass(parents[j], 'path');
+                j--;
+            }, 100);
+        } else {
+            removeClass(visited[i], 'path');
+            addClass(visited[i], 'visited');
+            i++;
+        }
+    }, 10);
 }
+
+function callbackTest(animate, visited){
+    animate(visited);
+}
+
 function removeClass(node, currentClass){
     index = node.col * 20 + node.row;
     cellElements[index].classList.remove(currentClass);
@@ -243,6 +205,9 @@ function removeClass(node, currentClass){
 
 function addClass(node, currentClass){
     index = node.col * 20 + node.row;
+    if(cellElements[index].classList.contains('start') || cellElements[index].classList.contains('end')){
+        return;
+    }
     cellElements[index].classList.add(currentClass);
 }
 
