@@ -1,6 +1,7 @@
 const X_CLASS = 'x'
 const CIRCLE_CLASS = 'circle'
 const cellElements = document.querySelectorAll('[data-cell]')
+console.log(cellElements);
 const winningMessageElement = document.getElementById('winningMessage')
 const restartButton = document.getElementById('restartButton')
 const WINNING_COMBINATION = [
@@ -100,36 +101,36 @@ function checkWin(currentClass) {
    })
 }
 
-function getCompMove(compMove){
-    var i;
-    if(checkWin(CIRCLE_CLASS)){
-        return 10;
-    }
-    if(checkWin(X_CLASS)){
-        return -10;
-    }
-    getEmpty();
-    if(emptyMoves.length == 0){
-        return 0;
-    }
-    var bestVal;
-    if(compMove){
-        bestVal = -99;
-        getEmpty();
-        for(i = 0; i < emptyMoves.length; i++){
-            if()
-        }
-    }
-    var index = 0;
+// function getCompMove(compMove){
+//     var i;
+//     if(checkWin(CIRCLE_CLASS)){
+//         return 10;
+//     }
+//     if(checkWin(X_CLASS)){
+//         return -10;
+//     }
+//     getEmpty();
+//     if(emptyMoves.length == 0){
+//         return 0;
+//     }
+//     var bestVal;
+//     if(compMove){
+//         bestVal = -99;
+//         getEmpty();
+//         for(i = 0; i < emptyMoves.length; i++){
+//             if()
+//         }
+//     }
+//     var index = 0;
 
-}
+// }
 
-function getEmpty(){
-    var index = 0;
-    emptyMoves = []
-    for(index; index < 9; index++){
-        if(!cellElements[index].classList.contains(CIRCLE_CLASS) && !cellElements[index].classList.contains(X_CLASS)){
-            emptyMoves.push(index);
-        }
-    }
-}
+// function getEmpty(){
+//     var index = 0;
+//     emptyMoves = []
+//     for(index; index < 9; index++){
+//         if(!cellElements[index].classList.contains(CIRCLE_CLASS) && !cellElements[index].classList.contains(X_CLASS)){
+//             emptyMoves.push(index);
+//         }
+//     }
+// }
