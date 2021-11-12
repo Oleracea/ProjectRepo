@@ -3,19 +3,57 @@ const endClass = 'end'
 const closedClass = 'closed'
 const pathClass = 'path'
 const order = ['start', 'end', 'closed']
+const classes = ['start', 'end', 'closed', 'visited', 'path']
 const cellElements = document.querySelectorAll('[data-cell]')
 let first;
 let end;
-let visited = [];
+//let visited = [];
 let track = 0;
-let tot_col_length = 15;
+let tot_col_length = 14;
 let tot_row_length = 20;
+let method = '';
+console.log(Math.abs(-3));
+
 class Queue{
     constructor(){
         this.elements = [];
     }
     enqueue(e){
         this.elements.push(e);
+    }
+    pop(){
+        return this.elements.shift();
+    }
+    peek(){
+        return this.elements[0];
+    }
+    isEmpty(){
+        return (this.elements.length == 0);
+    }
+}
+
+class PriorityQueue{
+    constructor(){
+        this.elements = [];
+    }
+    enqueue(e){
+        if(this.elements.length == 0){
+            this.elements.push(e);
+        }
+        for(var i = 0; i < this.elements.length; i++){
+            console.log(i)
+            console.log(this.elements.length);
+            //goes until finds a place where f_score is less than already in queue
+            if(e.f_score < this.elements[i].f_score){
+                console.log('insert');
+                this.elements.splice(i, 0, e);
+                return;
+            } else if(i == (this.elements.length - 1)){
+                console.log('push');
+                this.elements.push(e);
+                return;
+            }
+        }
     }
     pop(){
         return this.elements.shift();
@@ -38,25 +76,23 @@ class Node{
         this.isClosed = isClosed;
         this.isVisited = isVisited;
         this.parent = parent;
+        this.g_score = 99; 
+        this.f_score = 99;
     }
 
     update_neighbors(grid){
         this.neighbors = [];
         if (this.row < this.total_rows - 1 && grid[this.row + 1][this.col].isClosed == false){
             this.neighbors.push(grid[this.row + 1][this.col]);
-            (grid[this.row + 1][this.col]).parent = grid[this.row][this.col];
         }
         if (this.row > 0 && grid[this.row - 1][this.col].isClosed == false){
             this.neighbors.push(grid[this.row - 1][this.col])
-            grid[this.row - 1][this.col].parent = grid[this.row][this.col];
         }
         if (this.col < this.total_col - 1 && grid[this.row][this.col + 1].isClosed == false){
             this.neighbors.push(grid[this.row][this.col + 1])
-            grid[this.row][this.col + 1].parent = grid[this.row][this.col];
         }
         if (this.col > 0 && grid[this.row][this.col - 1].isClosed == false){
             this.neighbors.push(grid[this.row][this.col - 1])
-            grid[this.row][this.col - 1].parent = grid[this.row][this.col];
         }
     }
 }
@@ -80,14 +116,11 @@ start()
 function start() {
     cellElements.forEach(cell => {
         for(var i = 0; i < order.length; i++){
-            cell.classList.remove(order[i]);
+            cell.classList.remove(classes[i]);
         }
         cell.removeEventListener('click', handleClick)
         cell.addEventListener('click', handleClick, {once: true})
     })
-    // for(var i = 0; i < 10; i++){
-    //     cellElements[i].classList.add(pathClass);
-    // }
 }
 
 function handleClick(e){
@@ -122,6 +155,7 @@ function setCoordinates(cell){
 }
 
 function UCS(first, end){
+    var visited = [];
     q = new Queue();
     sNode = first;
     var current = sNode;
@@ -137,12 +171,87 @@ function UCS(first, end){
         }
         current.update_neighbors(grid);
         for(var i = 0; i < current.neighbors.length; i++){
+            current.neighbors[i].parent = current;
             q.enqueue(current.neighbors[i]);
         }
     }
     var parents = [];
     getParents(first, end, parents);
     animate(visited, parents);
+}
+
+
+function astar(first, end){
+    var temp_g_score = 0;
+    var visited = [];
+    first.g_score = 0;
+    first.f_score = h(first);
+
+    q = new PriorityQueue();
+    sNode = first;
+    var current = sNode;
+    console.log(current);
+    q.enqueue(sNode);
+    console.log(q);
+    console.log(q);
+    while (!(q.isEmpty())){
+        console.log('here');
+        current = q.peek();
+        temp_g_score = current.g_score + 1;
+        console.log(temp_g_score);
+        q.pop();
+        current.isClosed = true;
+        visited.push(current);
+        //addClass(current, 'visited');
+        if(current == end){
+            break;
+        }
+        current.update_neighbors(grid);
+        for(var i = 0; i < current.neighbors.length; i++){
+            if(temp_g_score < current.neighbors[i].g_score){
+                console.log('here');
+                current.neighbors[i].parent = current;
+                set_g(current.neighbors[i], temp_g_score);
+                set_f(current.neighbors[i], temp_g_score + h(current.neighbors[i]));
+                if(!checkIn(current.neighbors[i], q)){
+                    q.enqueue(current.neighbors[i]);
+                }  
+            }           
+        }
+    }
+    console.log('found');
+    
+    var parents = [];
+    getParents(first, end, parents);
+    animate(visited, parents);
+}
+
+function checkIn(node, q){
+    for(var i = 0; i < q.length; i++){
+        if(q[i] == node){
+            return true;
+        }
+    }
+    return false;
+}
+
+function get_g(node){
+    var score = g_score[node.row][node.col];
+    return score;
+}
+
+function set_g(node, val){
+    node.g_score = val;
+}
+
+function set_f(node, val){
+    node.f_score = val;
+}
+
+function h(node){
+    var num = Math.abs(end.row - node.row);
+    num = num + Math.abs(end.col - node.col);
+    return num;
 }
 
 function getParents(start, end, parents){
@@ -153,21 +262,6 @@ function getParents(start, end, parents){
         current = current.parent;
     }
     return parent;
-}
-
-const path_animate = async(parents, visited) => {
-    const result = await(animate(visited));
-    var i = parents.length - 1;
-    
-    window.setInterval(() =>{
-        if(i === 0){
-            return true;
-        }
-        removeClass(parents[i], 'visited');
-        addClass(parents[i], 'path');
-        i--;
-    }, 100);
-    return true;
 }
 
 function animate(visited, parents){
@@ -213,6 +307,25 @@ function addClass(node, currentClass){
 
 
 document.getElementById("start").addEventListener('click', function(){
-    UCS(first, end);
-    //makeRoute(first, end);
+    console.log(document.getElementById('method').value);
+    method(first, end);
 });
+
+document.getElementById("restart").addEventListener('click', function(){
+    restart();
+    console.log(document.getElementById('method').value);
+    method(first, end);
+});
+
+
+function setValD(){
+    method = UCS;
+}
+
+function setValA(){
+    method = astar;
+}
+
+function restart(){
+    start();
+}
