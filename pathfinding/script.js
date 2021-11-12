@@ -114,21 +114,29 @@ for(var i = 0; i < tot_row_length; i++){
 start()
 
 function start() {
+    parents = [];
+    // for(var i = 0; i < tot_row_length; i++){
+    //     for(var j = 0; j < tot_col_length; j++){
+    //         grid[i][j] = new Node(i, j, tot_row_length, tot_col_length, isClosed = false, isVisited = false, null);
+    //     }
+    // }
+    
     cellElements.forEach(cell => {
-        for(var i = 0; i < order.length; i++){
+        for(var i = 0; i < classes.length; i++){
             cell.classList.remove(classes[i]);
         }
         cell.removeEventListener('click', handleClick)
         cell.addEventListener('click', handleClick, {once: true})
     })
+    console.log(cellElements);
 }
 
 function handleClick(e){
     const cell = e.target
     setCoordinates(cell);
-    let index = Array.prototype.indexOf.call(cellElements, e.target);
-    let y = index%20;
-    let x = (index - y)/20;
+    var index = Array.prototype.indexOf.call(cellElements, e.target);
+    var y = index%20;
+    var x = (index - y)/20;
     placeMark(cell, order[track])
 }
 
@@ -269,12 +277,12 @@ function animate(visited, parents){
     
     window.setInterval(() =>{
         if(i === visited.length){
-            console.log(parents);
+            console.log('here');
             var j = parents.length - 1;
     
             window.setInterval(() =>{
-                if(j === 0){
-                    return true;
+                if(j == 0){
+                    return true;                    
                 }
                 removeClass(parents[j], 'visited');
                 addClass(parents[j], 'path');
@@ -305,17 +313,41 @@ function addClass(node, currentClass){
     cellElements[index].classList.add(currentClass);
 }
 
+document.getElementById("start").removeEventListener('click', function(){
+    console.log(document.getElementById('method').value);
+    method(first, end);
+});
 
 document.getElementById("start").addEventListener('click', function(){
     console.log(document.getElementById('method').value);
     method(first, end);
 });
 
-document.getElementById("restart").addEventListener('click', function(){
-    restart();
-    console.log(document.getElementById('method').value);
-    method(first, end);
+
+document.getElementById("restart").removeEventListener('click', function(){
+    start();
 });
+document.getElementById("restart").addEventListener('click', function(){
+    for(var i = 0; i < tot_row_length; i++){
+        for(var j = 0; j < tot_col_length; j++){
+            resetTo(grid[i][j]);
+        }
+    }
+    cellElements.forEach(cell => {
+        cell.classList.remove('path');
+        cell.removeEventListener('click', handleClick)
+        cell.addEventListener('click', handleClick, {once: true})
+    })
+    parents = [];
+});
+
+function resetTo(node){
+    node.isClosed = false;
+    node.isVisited = false;
+    node.parent = null;
+    node.g_score = 99;
+    node.f_score = 99;
+}
 
 
 function setValD(){
@@ -324,8 +356,4 @@ function setValD(){
 
 function setValA(){
     method = astar;
-}
-
-function restart(){
-    start();
 }

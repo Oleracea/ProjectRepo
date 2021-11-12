@@ -12,15 +12,6 @@
     margin: 0;
 }
 
-nav{
-    position: fixed;
-    top:0;
-    left: 0;
-    width: 100px;
-    height: 100%;
-    background-color: grey;
-}
-
 .cell {
 color: white;
 background-color: white;
@@ -45,36 +36,4 @@ border: 2px solid black;
 
 .cell.path{
     background-color: blue;
-}
-
-.restart {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0,0,0, .9);
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 5rem;
-}
-
-.restart button {
-    font-size: 3rem;
-    background-color: white;
-    border: 1px solid black;
-    padding: .25em .5em;
-    cursor: pointer;
-}
-
-.restart button:hover {
-    background-color: black;
-    color: white;
-    border-color: white;
-}
-
-.restart.show{
-    display: flex;
 }
